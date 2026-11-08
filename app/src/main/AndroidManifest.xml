@@ -12,10 +12,15 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Libera janelas flutuantes (freeform) em apps sem suporte no HyperOS/MIUI, como o Kwai." />
+            android:value="Libera janelas flutuantes (freeform) em apps sem suporte no HyperOS/MIUI." />
         <meta-data
             android:name="xposedminversion"
             android:value="82" />
+
+        <!-- Escopo sugerido (marcado automaticamente no LSPosed/Vector) -->
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposedscope" />
 
         <activity
             android:name=".MainActivity"

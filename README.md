@@ -1,8 +1,8 @@
 # Freeform Unlock
 
 Módulo **LSPosed** que remove as restrições de janela flutuante (freeform / 小窗)
-do HyperOS/MIUI, para que apps como o **Kwai** possam ser abertos em janela
-flutuante mesmo não estando na lista de apps suportados.
+do HyperOS/MIUI, para que apps fora da lista de suporte possam ser abertos em
+janela flutuante.
 
 Testado como conceito em HyperOS; os hooks são tolerantes a ROMs diferentes
 (se um método não existir, ele é ignorado).
@@ -70,23 +70,30 @@ gradle :app:assembleDebug
 
 ## Instalação
 
-1. Instale o APK (assinatura debug é aceita pelo LSPosed).
-2. Abra o **LSPosed → Módulos**, ative **Freeform Unlock**.
-3. Em **Escopo**, marque:
+1. Instale o APK (assinatura debug é aceita pelo LSPosed/Vector).
+2. Abra o **Vector/LSPosed → Módulos**, ative **Freeform Unlock**.
+3. **Escopo** — o módulo já declara `xposedscope`, então o gerenciador marca
+   sozinho (se não marcar, marque na mão):
    - **Sistema Android** (`android`) — obrigatório;
-   - **System UI** (`com.android.systemui`) — opcional, ajuda no botão de janela flutuante.
+   - **System UI** (`com.android.systemui`) — entrada pela notificação/quick settings;
+   - **Launcher do sistema** (`com.miui.home`) — menu de recentes/atalhos do HyperOS.
 4. **Reinicie o celular** (o `system_server` precisa subir com os hooks).
-5. Abra o Kwai e use "janela flutuante" pelo menu de recentes / barra lateral /
+5. Abra o app desejado e use "janela flutuante" pelo menu de recentes / barra lateral /
    notificação, conforme o seu HyperOS.
 
 ## Verificar se funcionou
+
+Sem adb: abra o app **Freeform Unlock** → **Rodar diagnóstico** (pede root). Ele
+mostra as props da ROM e as últimas linhas de log com a tag `FreeformUnlock`.
+
+Com adb:
 
 ```bash
 adb shell su -c 'logcat -s FreeformUnlock'
 ```
 
-Você deve ver `instalando hooks ...` seguido das linhas `hook ...` e
-`hooks instalados`. No LSPosed, os mesmos logs aparecem em **Logs**.
+Você deve ver `carregado no system_server`, as linhas `hook ...` e
+`hooks instalados: N`. No Vector/LSPosed, os mesmos logs aparecem em **Logs**.
 
 Se aparecer `classe ausente`, aquela classe não existe na sua ROM — normal, os
 outros hooks continuam valendo.
@@ -109,7 +116,7 @@ Proteções incluídas:
 
 ## Limitações
 
-- O Kwai pode ter verificações próprias (ex.: travar a orientação, recusar
+- Alguns apps têm verificações próprias (ex.: travar a orientação, recusar
   `multi-window` internamente). Nesse caso o hook do sistema não basta.
 - Atualizações do HyperOS podem renomear métodos. O módulo usa busca por padrão
   de nome justamente para sobreviver a isso, mas ajustes podem ser necessários.

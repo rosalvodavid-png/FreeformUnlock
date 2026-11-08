@@ -23,15 +23,17 @@ public final class ModuleEntry implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (!"android".equals(lpparam.packageName)) {
-            return;
-        }
-
         if (new File(KILL_SWITCH).exists()) {
             FreeformHooks.log("kill switch encontrado (" + KILL_SWITCH + "), hooks não instalados");
             return;
         }
 
-        FreeformHooks.install(lpparam.classLoader);
+        if ("android".equals(lpparam.packageName)) {
+            FreeformHooks.log("carregado no system_server (Vector/LSPosed ok)");
+            FreeformHooks.install(lpparam.classLoader);
+        } else if ("com.miui.home".equals(lpparam.packageName)) {
+            FreeformHooks.log("carregado no launcher (com.miui.home)");
+            FreeformHooks.installLauncher(lpparam.classLoader);
+        }
     }
 }

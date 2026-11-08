@@ -34,6 +34,7 @@ final class FreeformHooks {
 
     private static final String TAG = "FreeformUnlock";
     private static final Method[] NO_METHODS = new Method[0];
+    private static int sHooked;
 
     private interface NameFilter {
         boolean accept(String name);
@@ -65,7 +66,7 @@ final class FreeformHooks {
         // ------------------------------------------------------------------
         // 2) AOSP: "forçar atividades redimensionáveis" (equivalente à opção
         //    de desenvolvedor, mas ligada sempre, inclusive para apps que
-        //    declaram resizeableActivity=false, caso do Kwai)
+        //    declaram resizeableActivity=false)
         // ------------------------------------------------------------------
         hookAfter(cl, "com.android.server.wm.ActivityTaskManagerService", new NameFilter() {
             @Override
@@ -161,7 +162,32 @@ final class FreeformHooks {
             }
         });
 
-        log("hooks instalados");
+        log("hooks instalados: " + sHooked);
+    }
+
+    /**
+     * Hooks do launcher (com.miui.home). No HyperOS é o menu de recentes/atalhos
+     * do launcher que decide se um app pode ou não abrir em janela flutuante.
+     */
+    static void installLauncher(ClassLoader cl) {
+        log("instalando hooks do launcher");
+
+        hookBooleanTrue(cl, "com.miui.home.launcher.RecentsAndFSGestureUtils", new NameFilter() {
+            @Override
+            public boolean accept(String name) {
+                return "canTaskEnterSmallWindow".equals(name)
+                        || "canTaskEnterMiniSmallWindow".equals(name);
+            }
+        });
+
+        hookBooleanTrue(cl, "com.miui.home.smallwindow.SmallWindowStateHelperUseManager", new NameFilter() {
+            @Override
+            public boolean accept(String name) {
+                return "canEnterMiniSmallWindow".equals(name);
+            }
+        });
+
+        log("hooks do launcher instalados: " + sHooked);
     }
 
     // ----------------------------------------------------------------------
@@ -204,6 +230,7 @@ final class FreeformHooks {
                     continue;
                 }
                 XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(value));
+                sHooked++;
                 log("hook " + className + "#" + method.getName() + " -> " + value);
             } catch (Throwable t) {
                 log("falha ao hookar " + className + "#" + method.getName() + ": " + t);
@@ -226,6 +253,7 @@ final class FreeformHooks {
                     continue;
                 }
                 XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(empty));
+                sHooked++;
                 log("hook " + className + "#" + method.getName() + " -> " + empty.getClass().getSimpleName() + " vazio");
             } catch (Throwable t) {
                 log("falha ao hookar " + className + "#" + method.getName() + ": " + t);
@@ -269,6 +297,7 @@ final class FreeformHooks {
                         }
                     }
                 });
+                sHooked++;
                 log("hook after " + className + "#" + method.getName());
             } catch (Throwable t) {
                 log("falha ao hookar " + className + "#" + method.getName() + ": " + t);
