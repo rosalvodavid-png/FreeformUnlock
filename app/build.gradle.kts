@@ -6,12 +6,12 @@ android {
     namespace = "com.freeform.unlock"
     compileSdk = 35
 
-    defaultConfig {
+        defaultConfig {
         applicationId = "com.freeform.unlock"
         minSdk = 29
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 1
+        versionName = "1.0"
     }
 
     buildTypes {
