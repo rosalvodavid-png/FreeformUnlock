@@ -4,11 +4,9 @@
       Escopo sugerido: o LSPosed/Vector já marca estes processos sozinho.
       - android            -> system_server (todos os hooks de freeform)
       - com.android.systemui -> entrada de janela flutuante na notificação/quick settings
-      - com.miui.home      -> menu de recentes / atalhos do launcher (HyperOS)
     -->
     <string-array name="xposedscope">
         <item>android</item>
         <item>com.android.systemui</item>
-        <item>com.miui.home</item>
     </string-array>
 </resources>
